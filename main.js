@@ -53,6 +53,30 @@ var initHttpServer = () => {
     app.listen(http_port, () => console.log('Listening http on port: ' + 
     http_port));
     };
+var mineBlock = (blockData) => {
+        var previousBlock = getLatestBlock();
+        var nextIndex = previousBlock.index + 1;
+        var nonce = 0;
+        var nextTimestamp = new Date().getTime() / 1000;
+        var nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, 
+        blockData, nonce);
+        while (nextHash.substring(0, difficulty) !== Array(difficulty + 
+        1).join("0")){
+        nonce++;
+        nextTimestamp = new Date().getTime() / 1000;
+        nextHash = calculateHash(nextIndex, previousBlock.hash, 
+        nextTimestamp, blockData, nonce)
+        console.log("\"index\":" + nextIndex + 
+",\"previousHash\":"+previousBlock.hash+
+"\"timestamp\":"+nextTimestamp+",\"data\":"+blockData+
+",\x1b[33mhash: " + nextHash + " \x1b[0m," + 
+"\"difficulty\":"+difficulty+
+" \x1b[33mnonce: " + nonce + " \x1b[0m ");
+}
+return new Block(nextIndex, previousBlock.hash, nextTimestamp, blockData, 
+nextHash, difficulty, nonce);
+}
+    
 var initP2PServer = () => {
         var server = new WebSocket.Server({port: p2p_port});
         server.on('connection', ws => initConnection(ws));
