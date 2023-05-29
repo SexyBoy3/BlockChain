@@ -1,0 +1,7 @@
+{
+ "data":"Some data to the second block"
+}
+
+$env:HTTP_PORT=3001; $env:P2P_PORT=6001; npm start
+
+$env:HTTP_PORT=3001; $env:P2P_PORT=6001; npm start
