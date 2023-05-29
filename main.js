@@ -6,6 +6,7 @@ var WebSocket = require("ws");
 var http_port = process.env.HTTP_PORT || 3001;
 var p2p_port = process.env.P2P_PORT || 6001;
 var initialPeers = process.env.PEERS ? process.env.PEERS.split(',') : [];
+var difficulty = 4;
 class Block {
     constructor(index, previousHash, timestamp, data, hash) {
     this.index = index;
