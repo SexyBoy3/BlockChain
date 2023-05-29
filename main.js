@@ -8,12 +8,14 @@ var p2p_port = process.env.P2P_PORT || 6001;
 var initialPeers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 var difficulty = 4;
 class Block {
-    constructor(index, previousHash, timestamp, data, hash) {
+    constructor(index, previousHash, timestamp, data, hash, difficulty, nonce) {
     this.index = index;
     this.previousHash = previousHash.toString();
     this.timestamp = timestamp;
     this.data = data;
     this.hash = hash.toString();
+    this.difficulty = difficulty; 
+    this.nonce = nonce; 
     }
     }
 var sockets = [];
@@ -24,7 +26,7 @@ var MessageType = {
 };
 var getGenesisBlock = () => {
     return new Block(0, "0", 1682839690, "RUT-MIIT first block", 
-    "8d9d5a7ff4a78042ea6737bf59c772f8ed27ef3c9b576eac1976c91aaf48d2de");
+    "8d9d5a7ff4a78042ea6737bf59c772f8ed27ef3c9b576eac1976c91aaf48d2de", 0, 0);
     };
 var blockchain = [getGenesisBlock()];
 var initHttpServer = () => {
@@ -33,7 +35,8 @@ var initHttpServer = () => {
 
     app.get('/blocks', (req, res) => res.send(JSON.stringify(blockchain)));
     app.post('/mineBlock', (req, res) => {
-        var newBlock = generateNextBlock(req.body.data);
+        //var newBlock = generateNextBlock(req.body.data);
+        var newBlock = mineBlock(req.body.data);
         addBlock(newBlock);
         broadcast(responseLatestMsg());
         console.log('block added: ' + JSON.stringify(newBlock));
@@ -130,10 +133,10 @@ var closeConnection = (ws) => {
                 };
                 var calculateHashForBlock = (block) => {
                 return calculateHash(block.index, block.previousHash, block.timestamp, 
-                block.data);
+                block.data, block.nonce);
                 };
-                var calculateHash = (index, previousHash, timestamp, data) => {
-                return CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
+                var calculateHash = (index, previousHash, timestamp, data, nonce) => {
+                return CryptoJS.SHA256(index + previousHash + timestamp + data + nonce).toString();
                 };
                 var addBlock = (newBlock) => {
                 if (isValidNewBlock(newBlock, getLatestBlock())) {
