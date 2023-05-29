@@ -154,5 +154,43 @@ var closeConnection = (ws) => {
                 return false;
                 }
                 return true;
-                };
-                
+            };
+var replaceChain = (newBlocks) => {
+    if (isValidChain(newBlocks) && newBlocks.length > blockchain.length) {
+    console.log('Received blockchain is valid. Replacing current blockchain with received blockchain');
+    blockchain = newBlocks;
+    broadcast(responseLatestMsg());
+    } else { console.log('Received blockchain invalid');
+    }
+};
+var isValidChain = (blockchainToValidate) => {
+    if (JSON.stringify(blockchainToValidate[0]) !== 
+    JSON.stringify(getGenesisBlock())) {
+    return false;
+    }
+    var tempBlocks = [blockchainToValidate[0]];
+    for (var i = 1; i < blockchainToValidate.length; i++) {
+    if (isValidNewBlock(blockchainToValidate[i], tempBlocks[i - 1])) {
+    tempBlocks.push(blockchainToValidate[i]);
+    } else {
+    return false;
+    }
+    }
+    return true;
+    };
+var getLatestBlock = () => blockchain[blockchain.length - 1];
+var queryChainLengthMsg = () => ({'type': MessageType.QUERY_LATEST});
+var queryAllMsg = () => ({'type': MessageType.QUERY_ALL});
+var responseChainMsg = () =>({
+    'type': MessageType.RESPONSE_BLOCKCHAIN, 'data': JSON.stringify(blockchain)
+    });
+    var responseLatestMsg = () => ({
+    'type': MessageType.RESPONSE_BLOCKCHAIN,
+    'data': JSON.stringify([getLatestBlock()])
+    });
+    var write = (ws, message) => ws.send(JSON.stringify(message));
+    var broadcast = (message) => sockets.forEach(socket => write(socket, message));
+    connectToPeers(initialPeers);
+    initHttpServer();
+    initP2PServer();
+        
