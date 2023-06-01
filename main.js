@@ -64,7 +64,7 @@ var mineBlock = (blockData) => {
     var nonce = 0;
     var nextTimestamp = new Date().getTime() / 1000;
     var nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
-    while (nextHash.indexOf("314159") == -1){
+    while (nextHash.indexOf("34") == -1){
         nonce++;
         nextTimestamp = new Date().getTime() / 1000;
         nextHash = calculateHash(nextIndex, previousBlock.hash, 
@@ -168,15 +168,14 @@ var calculateHashForBlock = (block) => {
 
 // Change hash func
 var calculateHash = (index, previousHash, timestamp, data, nonce) => {
-    var message = index + previousHash+ timestamp+data+nonce;
-        // return CryptoJS.SHA256(CryptoJS.TripleDES(message.toString(), "Vladimir Vasiliev"));
-        var hash = 0;
-        for (var i = 0; i < message.length; i++) {
-            var character = message.charCodeAt(i);
-            hash = ((hash<<difficulty)-hash)+character;
-        }
-        return hash.toString();
+        var one_hash = CryptoJS.SHA256(index+previousHash+timestamp+data+nonce).toString();
+        var sec_hash = CryptoJS.MD5(index+previousHash+timestamp+data+nonce).toString();
+        var new_hash = one_hash+sec_hash;
+        
+
+        return new_hash.toString();
 };
+
 
 var addBlock = (newBlock) => {
     if (isValidNewBlock(newBlock, getLatestBlock())) {

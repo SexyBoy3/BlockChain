@@ -5,3 +5,65 @@
 $env:HTTP_PORT=3001; $env:P2P_PORT=6001; npm start
 
 $env:HTTP_PORT=3001; $env:P2P_PORT=6001; npm start
+var pre_key = CryptoJS.SHA256(data+ nonce.toString() + index.toString() + timestamp.toString()+ previousHash.toString());
+        var pad_key = "";
+        for (var i = 0; i<24; i++){
+            pad_key+=pre_key[i]
+        }
+        var key
+        
+        for(var i=0; i<pad_key.length; i++){
+            if(i == pad_key.length/2){
+                key+= '0'.repeat(8) // pasting 8 zeros in the middle of the for TripleDes
+            }
+            key+=pad_key[i]
+        }
+        var hash = CryptoJS.TripleDES.encrypt(data,key,undefined)
+        return hash.toString();
+    };
+var pre_key = CryptoJS.SHA256(data+ nonce.toString() + index.toString() + timestamp.toString()+ previousHash.toString());
+        var pad_key = "";
+        for (var i = 0; i<24; i++){
+            pad_key+=pre_key[i];
+        }
+        var key;
+        
+        for(var i=0; i<pad_key.length; i++){
+            if(i == pad_key.length/2){
+                key+= '0'.repeat(8); // pasting 8 zeros in the middle of the for TripleDes
+            }
+            key+=pad_key[i];
+        }
+        var pre_hash = CryptoJS.TripleDES.encrypt(data,key,undefined).toString();
+        var reversed_hash = pre_hash.split('').reverse();
+        var new_hash = "";
+        for(var i = 0; i < 32; i++){
+            new_hash+=reversed_hash[i];
+        }
+
+        return CryptoJS.SHA256(new_hash).toString();
+        
+
+        var calculateHash = (index, previousHash, timestamp, data, nonce) => {
+        var pre_key = CryptoJS.SHA256(data+  + index.toString() + previousHash.toString());
+        var pad_key = "";
+        for (var i = 0; i<24; i++){
+            pad_key+=pre_key[i];
+        }
+        var key = "";
+        
+        for(var i=0; i<pad_key.length; i++){
+            if(i == pad_key.length/2){
+                key+= '0'.repeat(8); // pasting 8 zeros in the middle
+            }
+            key+=pad_key[i];
+        }
+        var pre_hash = key.toString();
+        var reversed_hash = pre_hash.split('').reverse();
+        var new_hash = "";
+        for(var i = 0; i < 32; i++){
+            new_hash+=reversed_hash[i];
+        }
+
+        return new_hash.toString();
+};
