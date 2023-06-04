@@ -57,14 +57,14 @@ var initHttpServer = () => {
     app.listen(http_port, () => console.log('Listening http on port: ' + http_port));
 };
 
-// Change condition
 var mineBlock = (blockData) => {
     var previousBlock = getLatestBlock();
     var nextIndex = previousBlock.index + 1;
     var nonce = 0;
     var nextTimestamp = new Date().getTime() / 1000;
     var nextHash = calculateHash(nextIndex, previousBlock.hash, nextTimestamp, blockData, nonce);
-    while (nextHash.indexOf("34") == -1){
+    // Change condition
+    while (nextHash.indexOf("31415") == -1){
         nonce++;
         nextTimestamp = new Date().getTime() / 1000;
         nextHash = calculateHash(nextIndex, previousBlock.hash, 
@@ -170,8 +170,9 @@ var calculateHashForBlock = (block) => {
 var calculateHash = (index, previousHash, timestamp, data, nonce) => {
         var one_hash = CryptoJS.SHA256(index+previousHash+timestamp+data+nonce).toString();
         var sec_hash = CryptoJS.MD5(index+previousHash+timestamp+data+nonce).toString();
-        var new_hash = one_hash+sec_hash;
-        
+        var one_hash_half = one_hash.split('').slice(0,one_hash.length/2).join('');
+        var sec_hash_half = sec_hash.split('').slice(0,sec_hash.length/2).join('');
+        var new_hash = one_hash_half + sec_hash_half;
 
         return new_hash.toString();
 };
